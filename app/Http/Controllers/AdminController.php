@@ -38,5 +38,11 @@ class AdminController extends Controller
                 'message' => $exception->getMessage()
             ], 500);
         }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully'
+        ], 200);
     }
+    // TODO lihat semua akun
 }
