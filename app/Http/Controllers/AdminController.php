@@ -44,5 +44,17 @@ class AdminController extends Controller
             'message' => 'User created successfully'
         ], 200);
     }
-    // TODO lihat semua akun
+
+    public function showRegister()
+    {
+        $users = User::where('role', 'user')->get();
+
+        return response()->json([
+            'data' => [
+                'message' => 'User created successfully',
+                'data' => $users
+            ]
+        ], 200);
+    }
+    // TODO Lihat Detail Akun
 }
