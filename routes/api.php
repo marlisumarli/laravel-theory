@@ -23,4 +23,6 @@ Route::middleware(['admin.api'])->prefix('admin')->group(function (){
 Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::post('register', [\App\Http\Controllers\AdminController::class, 'register']);
     Route::get('register', [\App\Http\Controllers\AdminController::class, 'showRegister']);
+    Route::get('register/{id}', [\App\Http\Controllers\AdminController::class, 'showRegisterById']);
+    Route::put('register/{id}', [\App\Http\Controllers\AdminController::class, 'updateRegisterById']);
 });
