@@ -28,4 +28,6 @@ Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::delete('register/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRegisterById']);
     Route::get('register/activation/{id}', [\App\Http\Controllers\AdminController::class, 'activationRegisterById']);
     Route::get('register/deactivation/{id}', [\App\Http\Controllers\AdminController::class, 'deactivationRegisterById']);
+
+    Route::post('formula', [\App\Http\Controllers\AdminController::class, 'createFormula']);
 });

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Formula;
+use App\Models\Ingredient;
+use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -129,12 +132,6 @@ class AdminController extends Controller
     {
         $user = User::find($id);
 
-        $response = response()->json([
-            'data' => [
-                'message' => "null"
-            ]
-        ], 200);
-
         try {
             if ($user) {
                 User::where('id', $id)->delete();
@@ -161,7 +158,7 @@ class AdminController extends Controller
         return $response;
     }
 
-    public function activationRegisterById($id)
+    public function activationRegisterById($id): JsonResponse
     {
         $user = User::find($id);
 
@@ -183,7 +180,7 @@ class AdminController extends Controller
         }
     }
 
-    public function deactivationRegisterById($id)
+    public function deactivationRegisterById($id): JsonResponse
     {
         $user = User::find($id);
 
@@ -204,5 +201,72 @@ class AdminController extends Controller
             ], 404);
         }
     }
-    // TODO Resep
+
+    public function createFormula(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'description' => 'required',
+                'video' => 'required',
+                'user_email' => 'required',
+                'ingredients' => 'required',
+                'tools' => 'required',
+                'status' => 'required'
+            ]);
+
+            if ($validator->fails()){
+                return messageError($validator->messages()->toArray());
+            }
+
+            $thumbnail = $request->file('image');
+
+            $fileName = now()->timestamp . '_'. $request->image->getClientOriginalName();
+            $thumbnail->move('uploads', $fileName);
+
+            $formulaData = $validator->validated();
+
+            $formula = Formula::create([
+                'name' => $formulaData['name'],
+                'image' => 'uploads/' . $fileName,
+                'description' => $formulaData['description'],
+                'video' => $formulaData['video'],
+                'user_email' => $formulaData['user_email'],
+                'status' => $formulaData['status']
+            ]);
+
+            foreach (json_decode($request->ingredients) as $ingredient){
+
+                Ingredient::create([
+                    'name' => $ingredient->name,
+                    'unit' => $ingredient->unit,
+                    'quantity' => $ingredient->quantity,
+                    'description' => $ingredient->description,
+                    'formula_id' => $formula->id
+                ]);
+            }
+
+            foreach (json_decode($request->tools) as $tool){
+                Tool::create([
+                    'name' => $tool->name,
+                    'description' => $tool->description,
+                    'formula_id' => $formula->id
+                ]);
+            }
+
+            return response()->json([
+                'data' => [
+                    'message' => 'Formula successfully stored',
+                    'formula' => $formulaData['name']
+                ]
+            ]);
+
+        } catch (\Exception $exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ], 500);
+        }
+    }
 }

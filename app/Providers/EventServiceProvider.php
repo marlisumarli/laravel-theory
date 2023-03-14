@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Formula;
+use App\Models\Ingredient;
+use App\Models\Tool;
 use App\Models\User;
+use App\Observers\FormulaObserver;
+use App\Observers\IngredientObserver;
+use App\Observers\ToolObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -30,5 +36,8 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
+        Formula::observe(FormulaObserver::class);
+        Tool::observe(ToolObserver::class);
+        Ingredient::observe(IngredientObserver::class);
     }
 }
