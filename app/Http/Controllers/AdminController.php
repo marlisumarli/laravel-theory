@@ -124,4 +124,85 @@ class AdminController extends Controller
         }
         return $response;
     }
+
+    public function deleteRegisterById($id): JsonResponse
+    {
+        $user = User::find($id);
+
+        $response = response()->json([
+            'data' => [
+                'message' => "null"
+            ]
+        ], 200);
+
+        try {
+            if ($user) {
+                User::where('id', $id)->delete();
+
+                $response = response()->json([
+                    'data' => [
+                        'message' => "User with id: $id successfully deleted"
+                    ]
+                ], 200);
+            } else {
+                $response = response()->json([
+                    'data' => [
+                        'message' => "User with id: $id not found"
+                    ]
+                ], 404);
+            }
+
+        } catch (\Exception $exception) {
+            $response = response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ], 402);
+        }
+        return $response;
+    }
+
+    public function activationRegisterById($id)
+    {
+        $user = User::find($id);
+
+        if ($user) {
+            User::where('id', $id)->update(['status' => 'active']);
+
+            return response()->json([
+                'data' => [
+                    'message' => "User with id: $id successfully activated"
+                ]
+            ], 200);
+
+        } else {
+            return response()->json([
+                'data' => [
+                    'message' => "User with id: $id not found"
+                ]
+            ], 404);
+        }
+    }
+
+    public function deactivationRegisterById($id)
+    {
+        $user = User::find($id);
+
+        if ($user) {
+            User::where('id', $id)->update(['status' => 'inactive']);
+
+            return response()->json([
+                'data' => [
+                    'message' => "User with id: $id successfully deactivated"
+                ]
+            ], 200);
+
+        } else {
+            return response()->json([
+                'data' => [
+                    'message' => "User with id: $id not found"
+                ]
+            ], 404);
+        }
+    }
+    // TODO Resep
 }

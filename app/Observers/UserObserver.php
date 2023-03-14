@@ -51,7 +51,11 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        //
+        Log::create([
+            'module' => 'delete',
+            'action' => 'account delete',
+            'user_access' => $user->email
+        ]);
     }
 
     /**
