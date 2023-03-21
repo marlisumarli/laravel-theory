@@ -269,4 +269,66 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function updateFormula(Request $request, $id): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'required',
+            'video' => 'required',
+            'user_email' => 'required',
+            'ingredients' => 'required',
+            'tools' => 'required',
+            'status' => 'required'
+        ]);
+
+        if ($validator->fails()){
+            return messageError($validator->messages()->toArray());
+        }
+
+        $thumbnail = $request->file('image');
+
+        $fileName = now()->timestamp . '_'. $request->image->ClientI();
+        $thumbnail->move('uploads', $fileName);
+
+        $formulaData = $validator->validated();
+
+        Formula::where('formula_id', $id)->update([
+            'name' => $formulaData['name'],
+            'image' => 'uploads/' . $fileName,
+            'description' => $formulaData['description'],
+            'video' => $formulaData['video'],
+            'user_email' => $formulaData['user_email'],
+            'status' => $formulaData['status']
+        ]);
+
+        Ingredient::where('formula_id', $id)->delete();
+        Tool::where('formula_id', $id)->delete();
+
+        foreach (json_decode($request->ingredients) as $ingredient){
+            Ingredient::create([
+                'name' => $ingredient->name,
+                'unit' => $ingredient->unit,
+                'quantity' => $ingredient->quantity,
+                'description' => $ingredient->description,
+                'formula_id' => $id
+            ]);
+        }
+
+        foreach (json_decode($request->tools) as $tool){
+            Tool::create([
+                'name' => $tool->name,
+                'description' => $tool->description,
+                'formula_id' => $id
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'message' => 'formula edited successfully',
+                'formula' => $formulaData['name']
+            ]
+        ], 200);
+    }
 }

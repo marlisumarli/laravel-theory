@@ -30,7 +30,11 @@ class FormulaObserver
      */
     public function updated(Formula $formula)
     {
-        //
+        Log::create([
+            'module' => 'edit formula',
+            'action' => 'edit the formula to be ' . $formula->name . ' with id' . $formula->id,
+            'user_access' => $formula->user_email
+        ]);
     }
 
     /**
