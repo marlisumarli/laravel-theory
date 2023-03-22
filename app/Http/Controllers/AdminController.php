@@ -289,7 +289,7 @@ class AdminController extends Controller
 
         $thumbnail = $request->file('image');
 
-        $fileName = now()->timestamp . '_'. $request->image->ClientI();
+        $fileName = now()->timestamp . '_'. $request->image->getClientOriginalName();
         $thumbnail->move('uploads', $fileName);
 
         $formulaData = $validator->validated();
