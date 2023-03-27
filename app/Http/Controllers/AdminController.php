@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use App\Models\Recipe;
 use App\Models\Ingredient;
 use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
@@ -301,5 +303,78 @@ class AdminController extends Controller
                 'recipe' => $recipeData['title']
             ]
         ], 200);
+    }
+
+    public function deleteRecipe($id): JsonResponse
+    {
+        Tool::where('recipe_id', $id)->delete();
+        Ingredient::where('recipe_id', $id)->delete();
+        Recipe::where('recipe_id', $id)->delete();
+
+        return response()->json([
+            'data' => [
+                'message' => 'recipe deleted successfully',
+                'recipe_id' => $id
+            ]
+        ], 200);
+    }
+
+    public function publishedRecipe($id): JsonResponse
+    {
+        $recipe = Recipe::where('recipe_id', $id)->get();
+
+        if ($recipe) {
+            Recipe::where('recipe_id', $id)->update(['status' => 'published']);
+
+            Log::create([
+                'module' => 'recipe published',
+                'action' => 'published recipe with id: ' . $id,
+                'user_access' => 'administrator'
+            ]);
+
+            return response()->json([
+                'data' => [
+                    'message' => "Recipe with id: $id successfully published"
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                'data' => [
+                    'message' => "Recipe with id: $id not found"
+                ]
+            ], 404);
+        }
+    }
+
+    public function unpublishedRecipe($id): JsonResponse
+    {
+        $recipe = Recipe::where('recipe_id', $id)->get();
+
+        if ($recipe) {
+            Recipe::where('recipe_id', $id)->update(['status' => 'unpublished']);
+
+            Log::create([
+                'module' => 'recipe unpublished',
+                'action' => 'unpublished recipe with id: ' . $id,
+                'user_access' => 'administrator'
+            ]);
+
+            return response()->json([
+                'data' => [
+                    'message' => "Recipe with id: $id successfully unpublished"
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                'data' => [
+                    'message' => "Recipe with id: $id not found"
+                ]
+            ], 404);
+        }
+    }
+
+    public function dashboard(): JsonResponse
+    {
+       // TODO: Implement dashboard() method.
     }
 }

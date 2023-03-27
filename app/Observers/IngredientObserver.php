@@ -41,7 +41,11 @@ class IngredientObserver
      */
     public function deleted(Ingredient $ingredient)
     {
-        //
+        Log::create([
+            'module' => 'delete ingredient',
+            'action' => 'delete ingredient for recipe id ' . $ingredient->recipe_id . ' with ingredient ' . $ingredient->name,
+            'user_access' => '-'
+        ]);
     }
 
     /**

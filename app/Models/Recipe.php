@@ -19,4 +19,9 @@ class Recipe extends Model
         'user_email',
         'status'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_email', 'email');
+    }
 }

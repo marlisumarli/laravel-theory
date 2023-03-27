@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,10 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::get('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipe']);
+Route::get('recipes/{id}', [\App\Http\Controllers\RecipeController::class, 'showRecipeById']);
 
-Route::middleware(['admin.api'])->prefix('admin')->group(function (){
-    Route::post('register', [\App\Http\Controllers\AdminController::class, 'register']);
-});
 Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::post('register', [\App\Http\Controllers\AdminController::class, 'register']);
     Route::get('register', [\App\Http\Controllers\AdminController::class, 'showRegister']);
@@ -29,6 +27,11 @@ Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::get('register/activation/{id}', [\App\Http\Controllers\AdminController::class, 'activationRegisterById']);
     Route::get('register/deactivation/{id}', [\App\Http\Controllers\AdminController::class, 'deactivationRegisterById']);
 
-    Route::post('recipe', [\App\Http\Controllers\AdminController::class, 'createRecipe']);
-    Route::put('recipe/{id}', [\App\Http\Controllers\AdminController::class, 'updateRecipe']);
+    Route::post('recipes', [\App\Http\Controllers\AdminController::class, 'createRecipe']);
+    Route::put('recipes/{id}', [\App\Http\Controllers\AdminController::class, 'updateRecipe']);
+    Route::delete('recipes/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRecipe']);
+    Route::get('recipes/{id}/published', [\App\Http\Controllers\AdminController::class, 'publishedRecipe']);
+    Route::get('recipes/{id}/unpublished', [\App\Http\Controllers\AdminController::class, 'unpublishedRecipe']);
+
+    Route::get('dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
 });

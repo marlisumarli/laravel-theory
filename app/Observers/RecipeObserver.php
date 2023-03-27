@@ -45,7 +45,11 @@ class RecipeObserver
      */
     public function deleted(Recipe $recipe)
     {
-        //
+        Log::create([
+            'module' => 'delete recipe',
+            'action' => 'delete the recipe ' . $recipe->title . ' with id ' . $recipe->id,
+            'user_access' => $recipe->user_email
+        ]);
     }
 
     /**
