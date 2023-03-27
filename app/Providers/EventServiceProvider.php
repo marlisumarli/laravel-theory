@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Models\Formula;
+use App\Models\Recipe;
 use App\Models\Ingredient;
 use App\Models\Tool;
 use App\Models\User;
-use App\Observers\FormulaObserver;
+use App\Observers\RecipeObserver;
 use App\Observers\IngredientObserver;
 use App\Observers\ToolObserver;
 use App\Observers\UserObserver;
@@ -36,7 +36,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
-        Formula::observe(FormulaObserver::class);
+        Recipe::observe(RecipeObserver::class);
         Tool::observe(ToolObserver::class);
         Ingredient::observe(IngredientObserver::class);
     }

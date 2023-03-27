@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Formula;
+use App\Models\Recipe;
 use App\Models\Ingredient;
 use App\Models\Tool;
 use App\Models\User;
@@ -14,34 +14,26 @@ class AdminController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8',
-                'password_confirmation' => 'required|same:password',
-                'role' => 'required|in:admin,user',
-                'status' => 'required|in:active,inactive',
-                'email_verified_at' => 'required|date'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'password_confirmation' => 'required|same:password',
+            'role' => 'required|in:admin,user',
+            'status' => 'required|in:active,inactive',
+            'email_verified_at' => 'required|date'
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $validator->errors()
-                ], 400);
-            }
-
-            $user = $validator->validated();
-
-            User::create($user);
-
-        } catch (\Exception $exception) {
+        if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $exception->getMessage()
-            ], 500);
+                'message' => $validator->errors()
+            ], 400);
         }
+
+        $user = $validator->validated();
+
+        User::create($user);
 
         return response()->json([
             'status' => 'success',
@@ -83,48 +75,41 @@ class AdminController extends Controller
             ]
         ], 200);
 
-        try {
-            if ($user) {
-                $validator = Validator::make($request->all(), [
-                    'name' => 'required',
-                    'password' => 'min:8',
-                    'email' => 'required|email|unique:users,email,' . $id,
-                    'confirmation_password' => 'same:password',
-                    'role' => 'required|in:admin,user',
-                    'status' => 'required|in:active,inactive',
-                    'email_validate' => 'required|email'
-                ]);
+        if ($user) {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'password' => 'min:8',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'confirmation_password' => 'same:password',
+                'role' => 'required|in:admin,user',
+                'status' => 'required|in:active,inactive',
+                'email_validate' => 'required|email'
+            ]);
 
-                if ($validator->fails()) {
-                    return messageError($validator->messages()->toArray());
-                }
-
-                $data = $validator->validated();
-
-                User::where('id', $id)->update($data);
-
-                $response = response()->json([
-                    'data' => [
-                        'message' => "User with id: $id successfully updated",
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'role' => $data['role']
-                    ]
-                ], 200);
-            } else {
-                $response = response()->json([
-                    'data' => [
-                        'message' => "User with id: $id not found"
-                    ]
-                ], 404);
+            if ($validator->fails()) {
+                return messageError($validator->messages()->toArray());
             }
 
-        } catch (\Exception $exception) {
+            $data = $validator->validated();
+
+            User::where('id', $id)->update($data);
+
             $response = response()->json([
-                'status' => 'error',
-                'message' => $exception->getMessage()
-            ], 402);
+                'data' => [
+                    'message' => "User with id: $id successfully updated",
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'role' => $data['role']
+                ]
+            ], 200);
+        } else {
+            $response = response()->json([
+                'data' => [
+                    'message' => "User with id: $id not found"
+                ]
+            ], 404);
         }
+
         return $response;
     }
 
@@ -132,29 +117,22 @@ class AdminController extends Controller
     {
         $user = User::find($id);
 
-        try {
-            if ($user) {
-                User::where('id', $id)->delete();
+        if ($user) {
+            User::where('id', $id)->delete();
 
-                $response = response()->json([
-                    'data' => [
-                        'message' => "User with id: $id successfully deleted"
-                    ]
-                ], 200);
-            } else {
-                $response = response()->json([
-                    'data' => [
-                        'message' => "User with id: $id not found"
-                    ]
-                ], 404);
-            }
-
-        } catch (\Exception $exception) {
             $response = response()->json([
-                'status' => 'error',
-                'message' => $exception->getMessage()
-            ], 402);
+                'data' => [
+                    'message' => "User with id: $id successfully deleted"
+                ]
+            ], 200);
+        } else {
+            $response = response()->json([
+                'data' => [
+                    'message' => "User with id: $id not found"
+                ]
+            ], 404);
         }
+
         return $response;
     }
 
@@ -202,78 +180,10 @@ class AdminController extends Controller
         }
     }
 
-    public function createFormula(Request $request): JsonResponse
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'description' => 'required',
-                'video' => 'required',
-                'user_email' => 'required',
-                'ingredients' => 'required',
-                'tools' => 'required',
-                'status' => 'required'
-            ]);
-
-            if ($validator->fails()){
-                return messageError($validator->messages()->toArray());
-            }
-
-            $thumbnail = $request->file('image');
-
-            $fileName = now()->timestamp . '_'. $request->image->getClientOriginalName();
-            $thumbnail->move('uploads', $fileName);
-
-            $formulaData = $validator->validated();
-
-            $formula = Formula::create([
-                'name' => $formulaData['name'],
-                'image' => 'uploads/' . $fileName,
-                'description' => $formulaData['description'],
-                'video' => $formulaData['video'],
-                'user_email' => $formulaData['user_email'],
-                'status' => $formulaData['status']
-            ]);
-
-            foreach (json_decode($request->ingredients) as $ingredient){
-
-                Ingredient::create([
-                    'name' => $ingredient->name,
-                    'unit' => $ingredient->unit,
-                    'quantity' => $ingredient->quantity,
-                    'description' => $ingredient->description,
-                    'formula_id' => $formula->id
-                ]);
-            }
-
-            foreach (json_decode($request->tools) as $tool){
-                Tool::create([
-                    'name' => $tool->name,
-                    'description' => $tool->description,
-                    'formula_id' => $formula->id
-                ]);
-            }
-
-            return response()->json([
-                'data' => [
-                    'message' => 'Formula successfully stored',
-                    'formula' => $formulaData['name']
-                ]
-            ]);
-
-        } catch (\Exception $exception) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $exception->getMessage()
-            ], 500);
-        }
-    }
-
-    public function updateFormula(Request $request, $id): JsonResponse
+    public function createRecipe(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'title' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'required',
             'video' => 'required',
@@ -283,51 +193,112 @@ class AdminController extends Controller
             'status' => 'required'
         ]);
 
-        if ($validator->fails()){
+        if ($validator->fails()) {
             return messageError($validator->messages()->toArray());
         }
 
         $thumbnail = $request->file('image');
 
-        $fileName = now()->timestamp . '_'. $request->image->getClientOriginalName();
+        $fileName = now()->timestamp . '_' . $request->image->getClientOriginalName();
         $thumbnail->move('uploads', $fileName);
 
-        $formulaData = $validator->validated();
+        $recipeData = $validator->validated();
 
-        Formula::where('formula_id', $id)->update([
-            'name' => $formulaData['name'],
+        $recipe = Recipe::create([
+            'title' => $recipeData['title'],
             'image' => 'uploads/' . $fileName,
-            'description' => $formulaData['description'],
-            'video' => $formulaData['video'],
-            'user_email' => $formulaData['user_email'],
-            'status' => $formulaData['status']
+            'description' => $recipeData['description'],
+            'video' => $recipeData['video'],
+            'user_email' => $recipeData['user_email'],
+            'status' => $recipeData['status']
         ]);
 
-        Ingredient::where('formula_id', $id)->delete();
-        Tool::where('formula_id', $id)->delete();
+        foreach (json_decode($request->ingredients) as $ingredient) {
 
-        foreach (json_decode($request->ingredients) as $ingredient){
             Ingredient::create([
                 'name' => $ingredient->name,
                 'unit' => $ingredient->unit,
                 'quantity' => $ingredient->quantity,
                 'description' => $ingredient->description,
-                'formula_id' => $id
+                'recipe_id' => $recipe->id
             ]);
         }
 
-        foreach (json_decode($request->tools) as $tool){
+        foreach (json_decode($request->tools) as $tool) {
             Tool::create([
                 'name' => $tool->name,
                 'description' => $tool->description,
-                'formula_id' => $id
+                'recipe_id' => $recipe->id
             ]);
         }
 
         return response()->json([
             'data' => [
-                'message' => 'formula edited successfully',
-                'formula' => $formulaData['name']
+                'message' => 'recipe successfully stored',
+                'recipe' => $recipeData['title']
+            ]
+        ]);
+
+    }
+
+    public function updateRecipe(Request $request, $id): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'required',
+            'video' => 'required',
+            'user_email' => 'required',
+            'ingredients' => 'required',
+            'tools' => 'required',
+            'status' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return messageError($validator->messages()->toArray());
+        }
+
+        $thumbnail = $request->file('image');
+
+        $fileName = now()->timestamp . '_' . $request->image->getClientOriginalName();
+        $thumbnail->move('uploads', $fileName);
+
+        $recipeData = $validator->validated();
+
+        Recipe::where('recipe_id', $id)->update([
+            'title' => $recipeData['title'],
+            'image' => 'uploads/' . $fileName,
+            'description' => $recipeData['description'],
+            'video' => $recipeData['video'],
+            'user_email' => $recipeData['user_email'],
+            'status' => $recipeData['status']
+        ]);
+
+        Ingredient::where('recipe_id', $id)->delete();
+        Tool::where('recipe_id', $id)->delete();
+
+        foreach (json_decode($request->ingredients) as $ingredient) {
+            Ingredient::create([
+                'name' => $ingredient->name,
+                'unit' => $ingredient->unit,
+                'quantity' => $ingredient->quantity,
+                'description' => $ingredient->description,
+                'recipe_id' => $id
+            ]);
+        }
+
+        foreach (json_decode($request->tools) as $tool) {
+            Tool::create([
+                'name' => $tool->name,
+                'description' => $tool->description,
+                'recipe_id' => $id
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'message' => 'recipe edited successfully',
+                'recipe' => $recipeData['title']
             ]
         ], 200);
     }

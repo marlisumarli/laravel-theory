@@ -14,6 +14,6 @@ class Tool extends Model
     protected $fillable = [
         'name',
         'description',
-        'formula_id'
+        'recipe_id'
     ];
 }

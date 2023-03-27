@@ -16,6 +16,6 @@ class Ingredient extends Model
         'unit',
         'quantity',
         'description',
-        'formula_id'
+        'recipe_id'
     ];
 }

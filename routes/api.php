@@ -29,6 +29,6 @@ Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::get('register/activation/{id}', [\App\Http\Controllers\AdminController::class, 'activationRegisterById']);
     Route::get('register/deactivation/{id}', [\App\Http\Controllers\AdminController::class, 'deactivationRegisterById']);
 
-    Route::post('formula', [\App\Http\Controllers\AdminController::class, 'createFormula']);
-    Route::put('formula/{id}', [\App\Http\Controllers\AdminController::class, 'updateFormula']);
+    Route::post('recipe', [\App\Http\Controllers\AdminController::class, 'createRecipe']);
+    Route::put('recipe/{id}', [\App\Http\Controllers\AdminController::class, 'updateRecipe']);
 });

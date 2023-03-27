@@ -17,8 +17,8 @@ class CreateToolsTable extends Migration
             $table->id('tool_id');
             $table->string('name');
             $table->string('description');
-            $table->unsignedBigInteger('formula_id');
-            $table->foreign('formula_id')->references('formula_id')->on('formulas')
+            $table->unsignedBigInteger('recipe_id');
+            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

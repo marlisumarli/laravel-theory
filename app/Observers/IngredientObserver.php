@@ -17,7 +17,7 @@ class IngredientObserver
     {
         Log::create([
             'module' => 'add ingredient',
-            'action' => 'add in\gredient for formula id ' . $ingredient->formula_id . ' with ingredient ' . $ingredient->name,
+            'action' => 'add in\gredient for recipe id ' . $ingredient->recipe_id . ' with ingredient ' . $ingredient->name,
             'user_access' => '-'
         ]);
     }

@@ -17,7 +17,7 @@ class ToolObserver
     {
         Log::create([
             'module' => 'add tool',
-            'action' => 'add tool for formula id ' . $tool->formula_id . ' with tool name ' . $tool->name,
+            'action' => 'add tool for recipe id ' . $tool->recipe_id . ' with tool name ' . $tool->name,
             'user_access' => '-'
         ]);
     }

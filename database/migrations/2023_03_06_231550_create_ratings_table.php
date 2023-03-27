@@ -17,8 +17,8 @@ class CreateRatingsTable extends Migration
             $table->id('rating_id');
             $table->integer('rating');
             $table->string('review')->nullable();
-            $table->unsignedBigInteger('formula_id');
-            $table->foreign('formula_id')->references('formula_id')->on('formulas')
+            $table->unsignedBigInteger('recipe_id');
+            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->string('user_email');
             $table->foreign('user_email')->references('email')->on('users')

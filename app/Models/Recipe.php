@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Formula extends Model
+class Recipe extends Model
 {
     use HasFactory;
 
-    protected $table = 'formulas';
+    protected $table = 'recipes';
 
     protected $fillable = [
-        'name',
+        'title',
         'image',
         'description',
         'video',

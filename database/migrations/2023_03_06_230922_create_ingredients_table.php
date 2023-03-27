@@ -19,8 +19,8 @@ class CreateIngredientsTable extends Migration
             $table->string('unit');
             $table->decimal('quantity');
             $table->string('description')->nullable();
-            $table->unsignedBigInteger('formula_id');
-            $table->foreign('formula_id')->references('formula_id')->on('formulas')
+            $table->unsignedBigInteger('recipe_id');
+            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
             ->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
