@@ -17,6 +17,7 @@ Route::post('register', [\App\Http\Controllers\AuthController::class, 'register'
 Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::get('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipe']);
 Route::post('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipeById']);
+Route::post('recipes/rating', [\App\Http\Controllers\RecipeController::class, 'ratingRecipe']);
 
 Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::post('register', [\App\Http\Controllers\AdminController::class, 'register']);
