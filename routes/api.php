@@ -36,3 +36,7 @@ Route::middleware(['admin.api'])->prefix('admin')->group(function (){
 
     Route::get('dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
 });
+
+Route::middleware(['user.api'])->prefix('user')->group(function (){
+    Route::post('recipes', [\App\Http\Controllers\UserController::class, 'createRecipe']);
+});
