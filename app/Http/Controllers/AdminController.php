@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Log;
 use App\Models\Recipe;
 use App\Models\Ingredient;
+use App\Models\RecipeView;
 use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -375,6 +376,24 @@ class AdminController extends Controller
 
     public function dashboard(): JsonResponse
     {
-       // TODO: Implement dashboard() method.
+        $totalRecipe = Recipe::count();
+        $totalUser = User::count();
+        $totalPublished = Recipe::where('status', 'published')->count();
+        // Popular Recipe from table recipe_view
+        $popularRecipe = DB::table('recipes')
+            ->select('title', DB::raw('COUNT(*) as total'))
+            ->join('recipe_views', 'recipes.recipe_id', '=', 'recipe_views.recipe_id')
+            ->groupBy('title')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(10)
+            ->get();
+        return response()->json([
+            'data' => [
+                'totalRecipe' => $totalRecipe,
+                'totalUser' => $totalUser,
+                'totalPublished' => $totalPublished,
+                'popularRecipe' => $popularRecipe
+            ]
+        ], 200);
     }
 }

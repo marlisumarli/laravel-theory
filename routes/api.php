@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::get('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipe']);
-Route::get('recipes/{id}', [\App\Http\Controllers\RecipeController::class, 'showRecipeById']);
+Route::post('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipeById']);
 
 Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::post('register', [\App\Http\Controllers\AdminController::class, 'register']);
