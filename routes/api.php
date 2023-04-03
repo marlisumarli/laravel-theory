@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::get('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipe']);
-Route::post('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipeById']);
+Route::post('recipes/get-recipe', [\App\Http\Controllers\RecipeController::class, 'showRecipeById']);
 Route::post('recipes/rating', [\App\Http\Controllers\RecipeController::class, 'ratingRecipe']);
 
 Route::middleware(['admin.api'])->prefix('admin')->group(function (){
@@ -25,18 +25,18 @@ Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::get('register/{id}', [\App\Http\Controllers\AdminController::class, 'showRegisterById']);
     Route::put('register/{id}', [\App\Http\Controllers\AdminController::class, 'updateRegisterById']);
     Route::delete('register/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRegisterById']);
-    Route::get('register/activation/{id}', [\App\Http\Controllers\AdminController::class, 'activationRegisterById']);
-    Route::get('register/deactivation/{id}', [\App\Http\Controllers\AdminController::class, 'deactivationRegisterById']);
+    Route::get('activation-account/{id}', [\App\Http\Controllers\AdminController::class, 'activationRegisterById']);
+    Route::get('deactivation-account/{id}', [\App\Http\Controllers\AdminController::class, 'deactivationRegisterById']);
 
-    Route::post('recipes', [\App\Http\Controllers\AdminController::class, 'createRecipe']);
-    Route::put('recipes/{id}', [\App\Http\Controllers\AdminController::class, 'updateRecipe']);
-    Route::delete('recipes/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRecipe']);
-    Route::get('recipes/{id}/published', [\App\Http\Controllers\AdminController::class, 'publishedRecipe']);
-    Route::get('recipes/{id}/unpublished', [\App\Http\Controllers\AdminController::class, 'unpublishedRecipe']);
+    Route::post('create-recipe', [\App\Http\Controllers\AdminController::class, 'createRecipe']);
+    Route::put('update-recipe/{id}', [\App\Http\Controllers\AdminController::class, 'updateRecipe']);
+    Route::delete('delete-recipe/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRecipe']);
+    Route::get('publish/{id}', [\App\Http\Controllers\AdminController::class, 'publishedRecipe']);
+    Route::get('unpublish/{id}', [\App\Http\Controllers\AdminController::class, 'unpublishedRecipe']);
 
     Route::get('dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
 });
 
 Route::middleware(['user.api'])->prefix('user')->group(function (){
-    Route::post('recipes', [\App\Http\Controllers\UserController::class, 'createRecipe']);
+    Route::post('submit-recipe', [\App\Http\Controllers\UserController::class, 'createRecipe']);
 });
