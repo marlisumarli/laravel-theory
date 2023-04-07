@@ -15,11 +15,11 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name' => 'Administrator',
+            'nama' => 'Administrator',
             'email' => 'admin@coba.com',
            'role' => 'admin',
             'password' => 'admincoba',
-            'status' => 'active',
+            'status' => 'aktif',
             'last_login' => now()
         ]);
 

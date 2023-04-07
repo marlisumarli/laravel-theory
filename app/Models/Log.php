@@ -11,5 +11,5 @@ class Log extends Model
 
     protected $table = 'logs';
 
-    protected $fillable = ['module', 'action', 'user_access'];
+    protected $fillable = ['module', 'action', 'useraccess'];
 }

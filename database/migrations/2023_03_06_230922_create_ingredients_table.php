@@ -14,13 +14,13 @@ class CreateIngredientsTable extends Migration
     public function up()
     {
         Schema::create('ingredients', function (Blueprint $table) {
-            $table->id('ingredient_id');
-            $table->string('name');
-            $table->string('unit');
-            $table->decimal('quantity');
-            $table->string('description')->nullable();
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
+            $table->id('idbahan');
+            $table->string('nama');
+            $table->string('satuan');
+            $table->decimal('banyak');
+            $table->string('keterangan')->nullable();
+            $table->unsignedBigInteger('resep_idresep');
+            $table->foreign('resep_idresep')->references('idresep')->on('recipes')
             ->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

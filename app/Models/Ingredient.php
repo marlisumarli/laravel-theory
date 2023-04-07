@@ -12,10 +12,10 @@ class Ingredient extends Model
     protected $table = 'ingredients';
 
     protected $fillable = [
-        'name',
-        'unit',
-        'quantity',
-        'description',
-        'recipe_id'
+        'nama',
+        'satuan',
+        'banyak',
+        'keterangan',
+        'resep_idresep'
     ];
 }

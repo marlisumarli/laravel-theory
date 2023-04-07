@@ -14,10 +14,10 @@ class CreateRecipeViewsTable extends Migration
     public function up()
     {
         Schema::create('recipe_views', function (Blueprint $table) {
-            $table->id();
+            $table->id('idresep_view');
             $table->string('email')->nullable();
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
+            $table->unsignedBigInteger('resep_idresep');
+            $table->foreign('resep_idresep')->references('idresep')->on('recipes')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

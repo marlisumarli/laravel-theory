@@ -12,12 +12,12 @@ class Recipe extends Model
     protected $table = 'recipes';
 
     protected $fillable = [
-        'title',
-        'image',
-        'description',
+        'judul',
+        'gambar',
+        'cara_pembuatan',
         'video',
         'user_email',
-        'status'
+        'status_resep'
     ];
 
     public function user()

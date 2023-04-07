@@ -14,11 +14,11 @@ class CreateToolsTable extends Migration
     public function up()
     {
         Schema::create('tools', function (Blueprint $table) {
-            $table->id('tool_id');
-            $table->string('name');
-            $table->string('description');
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
+            $table->id('idalat');
+            $table->string('nama_alat');
+            $table->string('keterangan')->nullable();
+            $table->unsignedBigInteger('resep_idresep');
+            $table->foreign('resep_idresep')->references('idresep')->on('recipes')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

@@ -12,8 +12,8 @@ class Tool extends Model
     protected $table = 'tools';
 
     protected $fillable = [
-        'name',
-        'description',
-        'recipe_id'
+        'nama_alat',
+        'keterangan',
+        'resep_idresep'
     ];
 }

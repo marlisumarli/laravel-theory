@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Tool;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,60 +13,62 @@ class UserController extends Controller
 {
     public function createRecipe(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'required',
+            'judul' => 'required',
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cara_pembuatan' => 'required',
             'video' => 'required',
-            'user_email' => 'required',
-            'ingredients' => 'required',
-            'tools' => 'required',
-            'status' => 'required'
+            'user_email' => 'required|email',
+            'bahan' => 'required',
+            'alat' => 'required'
         ]);
 
         if ($validator->fails()) {
             return messageError($validator->messages()->toArray());
         }
 
-        $thumbnail = $request->file('image');
+        $thumbnail = $request->file('gambar');
 
-        $fileName = now()->timestamp . '_' . $request->image->getClientOriginalName();
+        $fileName = now()->timestamp . '_' . $request->gambar->getClientOriginalName();
         $thumbnail->move('uploads', $fileName);
 
         $recipeData = $validator->validated();
 
         $recipe = Recipe::create([
-            'title' => $recipeData['title'],
-            'image' => 'uploads/' . $fileName,
-            'description' => $recipeData['description'],
+            'judul' => $recipeData['judul'],
+            'gambar' => 'uploads/' . $fileName,
+            'cara_pembuatan' => $recipeData['cara_pembuatan'],
             'video' => $recipeData['video'],
             'user_email' => $recipeData['user_email'],
-            'status' => $recipeData['status']
+            'status_resep' => 'draft'
         ]);
 
-        foreach (json_decode($request->ingredients) as $ingredient) {
+        foreach (json_decode($request->bahan) as $ingredient) {
 
             Ingredient::create([
-                'name' => $ingredient->name,
-                'unit' => $ingredient->unit,
-                'quantity' => $ingredient->quantity,
-                'description' => $ingredient->description,
-                'recipe_id' => $recipe->id
+                'nama' => $ingredient->nama,
+                'satuan' => $ingredient->satuan,
+                'banyak' => $ingredient->banyak,
+                'keterangan' => $ingredient->keterangan,
+                'resep_idresep' => $recipe->id
             ]);
         }
 
-        foreach (json_decode($request->tools) as $tool) {
+        foreach (json_decode($request->alat) as $tool) {
             Tool::create([
-                'name' => $tool->name,
-                'description' => $tool->description,
-                'recipe_id' => $recipe->id
+                'nama_alat' => $tool->nama,
+                'keterangan' => $tool->keterangan,
+                'resep_idresep' => $recipe->id
             ]);
         }
 
         return response()->json([
+            'status' => 'Success',
+            'message' => 'Recipe Stored Successfully',
             'data' => [
-                'message' => 'recipe successfully stored',
-                'recipe' => $recipeData['title']
+                'recipe_id' => $recipe->id,
+                'recipe_title' => $recipeData['judul'],
             ]
         ]);
     }

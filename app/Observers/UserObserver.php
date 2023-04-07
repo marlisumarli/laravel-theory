@@ -24,7 +24,7 @@ class UserObserver
         Log::create([
             'module' => 'register',
             'action' => 'account register',
-            'user_access' => $user->email
+            'useraccess' => $user->email
         ]);
     }
 
@@ -39,7 +39,7 @@ class UserObserver
         Log::create([
             'module' => 'update',
             'action' => 'account update',
-            'user_access' => $user->email
+            'useraccess' => $user->email
         ]);
     }
 
@@ -54,7 +54,7 @@ class UserObserver
         Log::create([
             'module' => 'delete',
             'action' => 'account delete',
-            'user_access' => $user->email
+            'useraccess' => $user->email
         ]);
     }
 

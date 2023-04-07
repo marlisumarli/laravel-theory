@@ -17,18 +17,18 @@ class AdminController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'nama' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'password_confirmation' => 'required|same:password',
             'role' => 'required|in:admin,user',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:aktif,non-aktif',
             'email_verified_at' => 'required|date'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
+                'status' => 'Error',
                 'message' => $validator->errors()
             ], 400);
         }
@@ -38,8 +38,11 @@ class AdminController extends Controller
         User::create($user);
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully'
+            'status' => 'Success',
+            'message' => 'User Successfully Created',
+            'data' => [
+                'User' => $user
+            ],
         ], 200);
     }
 
@@ -48,43 +51,46 @@ class AdminController extends Controller
         $users = User::where('role', 'user')->get();
 
         return response()->json([
+            'status' => 'Success',
+            'message' => 'Registered Users',
             'data' => [
-                'message' => 'Users registered',
-                'data' => $users
+                'users' => $users
             ]
         ], 200);
     }
 
     public function showRegisterById($id): JsonResponse
     {
-        $user = User::where('id', $id)->first();
+        $user = User::find($id);
 
-        return response()->json([
-            'data' => [
-                'message' => "User id: $id",
-                'data' => $user
-            ]
-        ], 200);
+        if ($user) {
+            return response()->json([
+                'status' => 'Success',
+                "message" => "User Registered",
+                "data" => [
+                    'users' => $user
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'Error',
+                "message" => "Not Found"
+            ], 404);
+        }
     }
 
     public function updateRegisterById($id, Request $request): JsonResponse
     {
         $user = User::find($id);
 
-        $response = response()->json([
-            'data' => [
-                'message' => "null"
-            ]
-        ], 200);
-
         if ($user) {
             $validator = Validator::make($request->all(), [
-                'name' => 'required',
+                'nama' => 'required',
                 'password' => 'min:8',
                 'email' => 'required|email|unique:users,email,' . $id,
                 'confirmation_password' => 'same:password',
                 'role' => 'required|in:admin,user',
-                'status' => 'required|in:active,inactive',
+                'status' => 'required|in:aktif,non-aktif',
                 'email_validate' => 'required|email'
             ]);
 
@@ -97,18 +103,18 @@ class AdminController extends Controller
             User::where('id', $id)->update($data);
 
             $response = response()->json([
+                'status' => 'Success',
+                'message' => "User Updated Successfully",
                 'data' => [
-                    'message' => "User with id: $id successfully updated",
-                    'name' => $data['name'],
-                    'email' => $data['email'],
-                    'role' => $data['role']
+                    'user' => [
+                        $data
+                    ]
                 ]
             ], 200);
         } else {
             $response = response()->json([
-                'data' => [
-                    'message' => "User with id: $id not found"
-                ]
+                'status' => 'Error',
+                'message' => "Not Found"
             ], 404);
         }
 
@@ -123,15 +129,13 @@ class AdminController extends Controller
             User::where('id', $id)->delete();
 
             $response = response()->json([
-                'data' => [
-                    'message' => "User with id: $id successfully deleted"
-                ]
+                'status' => 'Success',
+                'message' => "User Deleted Successfully",
             ], 200);
         } else {
             $response = response()->json([
-                'data' => [
-                    'message' => "User with id: $id not found"
-                ]
+                'status' => 'Error',
+                'message' => "Not Found"
             ], 404);
         }
 
@@ -143,19 +147,20 @@ class AdminController extends Controller
         $user = User::find($id);
 
         if ($user) {
-            User::where('id', $id)->update(['status' => 'active']);
+            User::where('id', $id)->update(['status' => 'aktif']);
 
             return response()->json([
+                'status' => 'Success',
+                'message' => "Activated Successfully",
                 'data' => [
-                    'message' => "User with id: $id successfully activated"
+                    'user' => $user
                 ]
             ], 200);
 
         } else {
             return response()->json([
-                'data' => [
-                    'message' => "User with id: $id not found"
-                ]
+                'status' => 'Error',
+                'message' => "Not Found"
             ], 404);
         }
     }
@@ -165,19 +170,20 @@ class AdminController extends Controller
         $user = User::find($id);
 
         if ($user) {
-            User::where('id', $id)->update(['status' => 'inactive']);
+            User::where('id', $id)->update(['status' => 'non-aktif']);
 
             return response()->json([
+                'status' => 'Success',
+                'message' => "User Successfully Deactivated",
                 'data' => [
-                    'message' => "User with id: $id successfully deactivated"
+                    'user' => $user
                 ]
             ], 200);
 
         } else {
             return response()->json([
-                'data' => [
-                    'message' => "User with id: $id not found"
-                ]
+                'status' => 'Error',
+                'message' => "Not Found"
             ], 404);
         }
     }
@@ -185,59 +191,60 @@ class AdminController extends Controller
     public function createRecipe(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'required',
+            'judul' => 'required',
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cara_pembuatan' => 'required',
             'video' => 'required',
             'user_email' => 'required',
-            'ingredients' => 'required',
-            'tools' => 'required',
-            'status' => 'required'
+            'bahan' => 'required',
+            'alat' => 'required'
         ]);
 
         if ($validator->fails()) {
             return messageError($validator->messages()->toArray());
         }
 
-        $thumbnail = $request->file('image');
+        $thumbnail = $request->file('gambar');
 
-        $fileName = now()->timestamp . '_' . $request->image->getClientOriginalName();
+        $fileName = now()->timestamp . '_' . $request->gambar->getClientOriginalName();
         $thumbnail->move('uploads', $fileName);
 
         $recipeData = $validator->validated();
 
         $recipe = Recipe::create([
-            'title' => $recipeData['title'],
-            'image' => 'uploads/' . $fileName,
-            'description' => $recipeData['description'],
+            'judul' => $recipeData['judul'],
+            'gambar' => 'uploads/' . $fileName,
+            'cara_pembuatan' => $recipeData['cara_pembuatan'],
             'video' => $recipeData['video'],
             'user_email' => $recipeData['user_email'],
-            'status' => $recipeData['status']
+            'status_resep' => 'submit'
         ]);
 
-        foreach (json_decode($request->ingredients) as $ingredient) {
+        foreach (json_decode($request->bahan) as $ingredient) {
 
             Ingredient::create([
-                'name' => $ingredient->name,
-                'unit' => $ingredient->unit,
-                'quantity' => $ingredient->quantity,
-                'description' => $ingredient->description,
-                'recipe_id' => $recipe->id
+                'nama' => $ingredient->nama,
+                'satuan' => $ingredient->satuan,
+                'banyak' => $ingredient->banyak,
+                'keterangan' => $ingredient->keterangan,
+                'resep_idresep' => $recipe->id
             ]);
         }
 
-        foreach (json_decode($request->tools) as $tool) {
+        foreach (json_decode($request->alat) as $tool) {
             Tool::create([
-                'name' => $tool->name,
-                'description' => $tool->description,
-                'recipe_id' => $recipe->id
+                'nama_alat' => $tool->nama,
+                'keterangan' => $tool->keterangan,
+                'resep_idresep' => $recipe->id
             ]);
         }
 
         return response()->json([
+            'status' => 'Success',
+            'message' => 'Recipe Stored Successfully',
             'data' => [
-                'message' => 'recipe successfully stored',
-                'recipe' => $recipeData['title']
+                'recipe_id' => $recipe->id,
+                'recipe_title' => $recipeData['judul'],
             ]
         ]);
 
@@ -245,153 +252,177 @@ class AdminController extends Controller
 
     public function updateRecipe(Request $request, $id): JsonResponse
     {
+        $recipe = Recipe::where('idresep', $id)->first();
+
+        if (!$recipe) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Not Found'
+            ], 404);
+        }
+
         $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'required',
+            'judul' => 'required',
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cara_pembuatan' => 'required',
             'video' => 'required',
             'user_email' => 'required',
-            'ingredients' => 'required',
-            'tools' => 'required',
-            'status' => 'required'
+            'bahan' => 'required',
+            'alat' => 'required'
         ]);
 
         if ($validator->fails()) {
             return messageError($validator->messages()->toArray());
         }
 
-        $thumbnail = $request->file('image');
+        $thumbnail = $request->file('gambar');
 
-        $fileName = now()->timestamp . '_' . $request->image->getClientOriginalName();
+        $fileName = now()->timestamp . '_' . $request->gambar->getClientOriginalName();
         $thumbnail->move('uploads', $fileName);
 
         $recipeData = $validator->validated();
 
-        Recipe::where('recipe_id', $id)->update([
-            'title' => $recipeData['title'],
-            'image' => 'uploads/' . $fileName,
-            'description' => $recipeData['description'],
+        Recipe::where('idresep', $id)->update([
+            'judul' => $recipeData['judul'],
+            'gambar' => 'uploads/' . $fileName,
+            'cara_pembuatan' => $recipeData['cara_pembuatan'],
             'video' => $recipeData['video'],
             'user_email' => $recipeData['user_email'],
-            'status' => $recipeData['status']
+            'status_resep' => 'submit'
         ]);
 
-        Ingredient::where('recipe_id', $id)->delete();
-        Tool::where('recipe_id', $id)->delete();
+        Ingredient::where('resep_idresep', $id)->delete();
+        Tool::where('resep_idresep', $id)->delete();
 
-        foreach (json_decode($request->ingredients) as $ingredient) {
+        foreach (json_decode($request->bahan) as $ingredient) {
             Ingredient::create([
-                'name' => $ingredient->name,
-                'unit' => $ingredient->unit,
-                'quantity' => $ingredient->quantity,
-                'description' => $ingredient->description,
-                'recipe_id' => $id
+                'nama' => $ingredient->nama,
+                'satuan' => $ingredient->satuan,
+                'banyak' => $ingredient->banyak,
+                'keterangan' => $ingredient->keterangan,
+                'resep_idresep' => $id
             ]);
         }
 
-        foreach (json_decode($request->tools) as $tool) {
+        foreach (json_decode($request->alat) as $tool) {
             Tool::create([
-                'name' => $tool->name,
-                'description' => $tool->description,
-                'recipe_id' => $id
+                'nama_alat' => $tool->nama_alat,
+                'keterangan' => $tool->keterangan,
+                'resep_idresep' => $id
             ]);
         }
 
         return response()->json([
+            'status' => 'Success',
+            'message' => 'Recipe Edited Successfully',
             'data' => [
-                'message' => 'recipe edited successfully',
-                'recipe' => $recipeData['title']
+                'recipe' => $recipeData['judul']
             ]
         ], 200);
+
     }
 
     public function deleteRecipe($id): JsonResponse
     {
-        Tool::where('recipe_id', $id)->delete();
-        Ingredient::where('recipe_id', $id)->delete();
-        Recipe::where('recipe_id', $id)->delete();
+        $recipe = Recipe::where('idresep', $id)->first();
+
+        if (!$recipe) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Not Found'
+            ], 404);
+        }
+
+        Tool::where('resep_idresep', $id)->delete();
+        Ingredient::where('resep_idresep', $id)->delete();
+        Recipe::where('idresep', $id)->delete();
 
         return response()->json([
-            'data' => [
-                'message' => 'recipe deleted successfully',
-                'recipe_id' => $id
-            ]
+            'status' => 'Success',
+            'message' => 'Recipe Deleted Successfully'
         ], 200);
     }
 
     public function publishedRecipe($id): JsonResponse
     {
-        $recipe = Recipe::where('recipe_id', $id)->get();
+        $recipe = Recipe::where('idresep', $id)->first();
 
-        if ($recipe) {
-            Recipe::where('recipe_id', $id)->update(['status' => 'published']);
-
-            Log::create([
-                'module' => 'recipe published',
-                'action' => 'published recipe with id: ' . $id,
-                'user_access' => 'administrator'
-            ]);
-
+        if (!$recipe) {
             return response()->json([
-                'data' => [
-                    'message' => "Recipe with id: $id successfully published"
-                ]
-            ], 200);
-        } else {
-            return response()->json([
-                'data' => [
-                    'message' => "Recipe with id: $id not found"
-                ]
+                'status' => 'Error',
+                'message' => 'Not Found'
             ], 404);
         }
+
+        Recipe::where('idresep', $id)->update(['status_resep' => 'published']);
+
+        Log::create([
+            'module' => 'Recipe Published',
+            'action' => 'Published Recipe With ID : ' . $id,
+            'useraccess' => 'Administrator'
+        ]);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => "Recipe Successfully Published",
+            'data' => [
+                'recipe_id' => $id,
+                'recipe_title' => $recipe['judul'],
+            ]
+        ], 200);
+
     }
 
     public function unpublishedRecipe($id): JsonResponse
     {
-        $recipe = Recipe::where('recipe_id', $id)->get();
+        $recipe = Recipe::where('idresep', $id)->first();
 
-        if ($recipe) {
-            Recipe::where('recipe_id', $id)->update(['status' => 'unpublished']);
-
-            Log::create([
-                'module' => 'recipe unpublished',
-                'action' => 'unpublished recipe with id: ' . $id,
-                'user_access' => 'administrator'
-            ]);
-
+        if (!$recipe) {
             return response()->json([
-                'data' => [
-                    'message' => "Recipe with id: $id successfully unpublished"
-                ]
-            ], 200);
-        } else {
-            return response()->json([
-                'data' => [
-                    'message' => "Recipe with id: $id not found"
-                ]
+                'status' => 'Error',
+                'message' => 'Not Found'
             ], 404);
         }
+
+        Recipe::where('idresep', $id)->update(['status_resep' => 'unpublished']);
+
+        Log::create([
+            'module' => 'Recipe Unpublished',
+            'action' => 'Unpublished Recipe With ID : ' . $id,
+            'useraccess' => 'Administrator'
+        ]);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => "Recipe Successfully Unpublished",
+            'data' => [
+                'recipe_id' => $id,
+                'recipe_title' => $recipe['judul']
+            ]
+        ], 200);
+
     }
 
     public function dashboard(): JsonResponse
     {
         $totalRecipe = Recipe::count();
         $totalUser = User::count();
-        $totalPublished = Recipe::where('status', 'published')->count();
+        $totalPublished = Recipe::where('status_resep', 'published')->count();
+
         // Popular Recipe from table recipe_view
         $popularRecipe = DB::table('recipes')
-            ->select('title', DB::raw('COUNT(*) as total'))
-            ->join('recipe_views', 'recipes.recipe_id', '=', 'recipe_views.recipe_id')
-            ->groupBy('title')
+            ->select('judul', DB::raw("COUNT(*) as 'Total Views'"))
+            ->join('recipe_views', 'recipes.idresep', '=', 'recipe_views.resep_idresep')
+            ->groupBy('judul')
             ->orderByRaw('COUNT(*) DESC')
             ->limit(10)
             ->get();
         return response()->json([
             'data' => [
-                'totalRecipe' => $totalRecipe,
-                'totalUser' => $totalUser,
-                'totalPublished' => $totalPublished,
-                'popularRecipe' => $popularRecipe
+                'total_recipe' => $totalRecipe,
+                'total_user' => $totalUser,
+                'total_published' => $totalPublished,
+                'popular_recipe' => $popularRecipe
             ]
         ], 200);
     }

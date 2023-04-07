@@ -17,8 +17,8 @@ class IngredientObserver
     {
         Log::create([
             'module' => 'add ingredient',
-            'action' => 'add in\gredient for recipe id ' . $ingredient->recipe_id . ' with ingredient ' . $ingredient->name,
-            'user_access' => '-'
+            'action' => 'add in\gredient for recipe id ' . $ingredient->resep_idresep . ' with ingredient ' . $ingredient->nama,
+            'useraccess' => '-'
         ]);
     }
 
@@ -43,8 +43,8 @@ class IngredientObserver
     {
         Log::create([
             'module' => 'delete ingredient',
-            'action' => 'delete ingredient for recipe id ' . $ingredient->recipe_id . ' with ingredient ' . $ingredient->name,
-            'user_access' => '-'
+            'action' => 'delete ingredient for recipe id ' . $ingredient->resep_idresep . ' with ingredient ' . $ingredient->nama,
+            'useraccess' => '-'
         ]);
     }
 

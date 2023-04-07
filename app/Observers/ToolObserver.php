@@ -17,8 +17,8 @@ class ToolObserver
     {
         Log::create([
             'module' => 'add tool',
-            'action' => 'add tool for recipe id ' . $tool->recipe_id . ' with tool name ' . $tool->name,
-            'user_access' => '-'
+            'action' => 'add tool for recipe id ' . $tool->resep_idresep . ' with tool name ' . $tool->nama,
+            'useraccess' => '-'
         ]);
     }
 
@@ -43,8 +43,8 @@ class ToolObserver
     {
         Log::create([
             'module' => 'delete tool',
-            'action' => 'delete tool for recipe id ' . $tool->recipe_id . ' with tool name ' . $tool->name,
-            'user_access' => '-'
+            'action' => 'delete tool for recipe id ' . $tool->resep_idresep . ' with tool name ' . $tool->nama,
+            'useraccess' => '-'
         ]);
     }
 

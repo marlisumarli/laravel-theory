@@ -14,11 +14,11 @@ class CreateRatingsTable extends Migration
     public function up()
     {
         Schema::create('ratings', function (Blueprint $table) {
-            $table->id('rating_id');
+            $table->id('idrating');
             $table->integer('rating');
             $table->string('review')->nullable();
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('recipe_id')->on('recipes')
+            $table->unsignedBigInteger('resep_idresep');
+            $table->foreign('resep_idresep')->references('idresep')->on('recipes')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->string('user_email');
             $table->foreign('user_email')->references('email')->on('users')

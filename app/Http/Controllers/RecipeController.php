@@ -15,18 +15,18 @@ class RecipeController extends Controller
 {
     public function showRecipe(): JsonResponse
     {
-        $recipes = Recipe::with('user')->where('status', 'published')->get();
+        $recipes = Recipe::with('user')->where('status_resep', 'published')->get();
 
         $data = [];
 
         foreach ($recipes as $recipe) {
             $data[] = [
-                'recipe_id' => $recipe->recipe_id,
-                'title' => $recipe->title,
-                'description' => $recipe->description,
-                'image' => $recipe->image,
+                'idresep' => $recipe->idresep,
+                'judul' => $recipe->judul,
+                'cara_pembuatan' => $recipe->cara_pembuatan,
+                'gambar' => $recipe->gambar,
                 'video' => $recipe->video,
-                'user' => $recipe->user->name,
+                'user' => $recipe->user->nama,
             ];
         }
 
@@ -36,33 +36,38 @@ class RecipeController extends Controller
     public function showRecipeById(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'recipeId' => 'required',
-            'email' => 'email'
+            'idresep' => 'required'
         ]);
+
+        $recipe = Recipe::with('user')->where('status_resep', 'published')->where('idresep', $request->idresep)->first();
+
+        if (!$recipe) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Recipe not found'
+            ], 404);
+        }
 
         if ($validator->fails()){
             return messageError($validator->messages()->toArray());
         }
 
-        $recipes = Recipe::where('status', 'published')
-            ->where('recipe_id', $request->recipeId)->get();
+        $recipes = Recipe::where('status_resep', 'published')
+            ->where('idresep', $request->idresep)->get();
 
-        $tools = Tool::where('recipe_id', $request->recipeId)->get();
-        $ingredients = Ingredient::where('recipe_id', $request->recipeId)->get();
+        $tools = Tool::where('resep_idresep', $request->idresep)->get();
+        $ingredients = Ingredient::where('resep_idresep', $request->idresep)->get();
 
         $data = [];
 
         foreach ($recipes as $recipe) {
             $data[] = [
-                'recipe_id' => $recipe->recipe_id,
-                'title' => $recipe->title,
-                'description' => $recipe->description,
-                'image' => $recipe->image,
+                'idresep' => $recipe->idresep,
+                'judul' => $recipe->judul,
+                'gambar' => $recipe->gambar,
+                'cara_pembuatan' => $recipe->cara_pembuatan,
                 'video' => $recipe->video,
-                'user' => $recipe->user->name,
-                'tools' => $tools,
-                'ingredients' => $ingredients,
-                'name' => $recipe->user->name,
+                'user' => $recipe->user->nama,
             ];
         }
 
@@ -74,7 +79,7 @@ class RecipeController extends Controller
 
         RecipeView::create([
             'email' => $request->email,
-            'recipe_id' => $request->recipe_id
+            'resep_idresep' => $request->idresep
         ]);
 
         return response()->json($recipeData, 200);
@@ -83,9 +88,9 @@ class RecipeController extends Controller
     public function ratingRecipe(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'recipe_id' => 'required',
+            'idresep' => 'required',
             'email' => 'email',
-            'rating' => 'required|in:1,2,3,4,5'
+            'rating' => 'required|in:1,2,3,4,5',
         ]);
 
         if ($validator->fails()){
@@ -93,14 +98,15 @@ class RecipeController extends Controller
         }
 
         Rating::create([
+            'resep_idresep' => $request->idresep,
             'rating' => $request->rating,
             'review' => $request->review,
-            'recipe_id' => $request->recipe_id,
             'user_email' => $request->email
         ]);
 
         return response()->json([
-            'message' => 'Rating successfully'
+            'status' => 'success',
+            'message' => 'Rating Successfully'
         ], 200);
     }
 }

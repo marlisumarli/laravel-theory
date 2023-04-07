@@ -13,7 +13,6 @@ class RecipeView extends Model
 
     protected $fillable = [
         'email',
-        'date',
-        'recipe_id',
+        'resep_idresep',
     ];
 }

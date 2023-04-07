@@ -13,43 +13,46 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8',
-                'confirmation_password' => 'required|same:password'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'confirmation_password' => 'required|same:password'
+        ]);
 
-            if ($validator->fails()) {
-                return messageError($validator->messages()->toArray());
-            }
-
-            $user = $validator->validate();
-
-            User::create($user);
-
-            $payload = [
-                'name' => $user['name'],
-                'role' => 'user',
-                'iat' => now()->timestamp,
-                'exp' => now()->timestamp + 7200
-            ];
-
-            $token = JWT::encode($payload, env('JWT_SECRET_KEY'), 'HS256');
-
-            return response()->json([
-                'data' => [
-                    'message' => 'Successful registration',
-                    'name' => $user['name'],
-                    'email' => $user['email'],
-                    'role' => 'user'
-                ],
-                'token' => "Bearer {$token}"
-            ], 200);
-        } catch (\Exception $e) {
-            return messageError('Error');
+        if ($validator->fails()) {
+            return messageError($validator->messages()->toArray());
         }
+
+        $user = $validator->validate();
+
+        User::create($user);
+
+        $payload = [
+            'nama' => $user['nama'],
+            'role' => 'user',
+            'iat' => now()->timestamp,
+            'exp' => now()->timestamp + 172000
+        ];
+
+        $token = JWT::encode($payload, env('JWT_SECRET_KEY'), 'HS256');
+
+        Log::create([
+            'module' => 'Login',
+            'action' => 'Account Login',
+            'useraccess' => $user['email']
+        ]);
+
+        return response()->json([
+            'data' => [
+                'message' => 'Successful registration',
+                'name' => $user['nama'],
+                'email' => $user['email'],
+                'role' => 'user'
+            ],
+            'token' => "Bearer {$token}"
+        ], 200);
+
     }
 
     public function login(Request $request)
@@ -63,12 +66,12 @@ class AuthController extends Controller
             return messageError($validator->messages()->toArray());
         }
 
-        if (Auth::attempt($validator->validate())){
+        if (Auth::attempt($validator->validate())) {
             $payload = [
-                'name' => Auth::user()->name,
+                'nama' => Auth::user()->nama,
                 'role' => Auth::user()->role,
                 'iat' => now()->timestamp,
-                'exp' => now()->timestamp + 7200
+                'exp' => now()->timestamp + 172000
             ];
 
             $token = JWT::encode($payload, env('JWT_SECRET_KEY'), 'HS256');
@@ -76,13 +79,14 @@ class AuthController extends Controller
             Log::create([
                 'module' => 'login',
                 'action' => 'account login',
-                'user_access' => Auth::user()->email
+                'useraccess' => Auth::user()->email
             ]);
 
             return response()->json([
+                'status' => 'success',
+                'message' => 'Login Successfully',
                 "data" => [
-                    'message' => 'Successful login',
-                    'name' => Auth::user()->name,
+                    'nama' => Auth::user()->nama,
                     'email' => Auth::user()->email,
                     'role' => Auth::user()->role
                 ],
@@ -91,7 +95,8 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'error' => 'Email or password is incorrect'
+            'status' => 'error',
+            'message' => 'Email Or Password Is Incorrect'
         ], 401);
     }
 }

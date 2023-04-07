@@ -17,8 +17,8 @@ class RecipeObserver
     {
         Log::create([
             'module' => 'add recipe',
-            'action' => 'add recipe ' . $recipe->title . ' with id ' . $recipe->id,
-            'user_access' => $recipe->user_email
+            'action' => 'add recipe ' . $recipe->judul . ' with id ' . $recipe->idresep,
+            'useraccess' => $recipe->user_email
         ]);
     }
 
@@ -32,8 +32,8 @@ class RecipeObserver
     {
         Log::create([
             'module' => 'edit recipe',
-            'action' => 'edit the recipe to be ' . $recipe->title . ' with id' . $recipe->id,
-            'user_access' => $recipe->user_email
+            'action' => 'edit the recipe to be ' . $recipe->judul . ' with id' . $recipe->idresep,
+            'useraccess' => $recipe->user_email
         ]);
     }
 
@@ -47,8 +47,8 @@ class RecipeObserver
     {
         Log::create([
             'module' => 'delete recipe',
-            'action' => 'delete the recipe ' . $recipe->title . ' with id ' . $recipe->id,
-            'user_access' => $recipe->user_email
+            'action' => 'delete the recipe ' . $recipe->judul . ' with id ' . $recipe->idresep,
+            'useraccess' => $recipe->user_email
         ]);
     }
 
