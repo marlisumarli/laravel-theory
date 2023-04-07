@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Log;
 use App\Models\Recipe;
 use App\Models\Ingredient;
-use App\Models\RecipeView;
 use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;

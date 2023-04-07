@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\log;
+use App\Models\Log;
 use App\Models\User;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
@@ -73,7 +73,7 @@ class AuthController extends Controller
 
             $token = JWT::encode($payload, env('JWT_SECRET_KEY'), 'HS256');
 
-            log::create([
+            Log::create([
                 'module' => 'login',
                 'action' => 'account login',
                 'user_access' => Auth::user()->email
