@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('author', [\App\Http\Controllers\InfoController::class, 'author']);
+
 Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::get('recipes', [\App\Http\Controllers\RecipeController::class, 'showRecipe']);
@@ -21,14 +23,16 @@ Route::post('recipes/rating', [\App\Http\Controllers\RecipeController::class, 'r
 
 Route::middleware(['admin.api'])->prefix('admin')->group(function (){
     Route::post('register', [\App\Http\Controllers\AdminController::class, 'register']);
-    Route::get('register', [\App\Http\Controllers\AdminController::class, 'showRegister']);
-    Route::get('register/{id}', [\App\Http\Controllers\AdminController::class, 'showRegisterById']);
-    Route::put('register/{id}', [\App\Http\Controllers\AdminController::class, 'updateRegisterById']);
-    Route::delete('register/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRegisterById']);
+    Route::get('registers', [\App\Http\Controllers\AdminController::class, 'showRegister']);
+    Route::get('registers/{id}', [\App\Http\Controllers\AdminController::class, 'showRegisterById']);
+    Route::put('registers/{id}', [\App\Http\Controllers\AdminController::class, 'updateRegisterById']);
+    Route::delete('registers/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRegisterById']);
     Route::get('activation-account/{id}', [\App\Http\Controllers\AdminController::class, 'activationRegisterById']);
     Route::get('deactivation-account/{id}', [\App\Http\Controllers\AdminController::class, 'deactivationRegisterById']);
 
     Route::post('create-recipe', [\App\Http\Controllers\AdminController::class, 'createRecipe']);
+    Route::get('show-recipes', [\App\Http\Controllers\AdminController::class, 'showRecipes']);
+    Route::get('show-recipes/{id}', [\App\Http\Controllers\AdminController::class, 'showRecipeById']);
     Route::put('update-recipe/{id}', [\App\Http\Controllers\AdminController::class, 'updateRecipe']);
     Route::delete('delete-recipe/{id}', [\App\Http\Controllers\AdminController::class, 'deleteRecipe']);
     Route::get('publish/{id}', [\App\Http\Controllers\AdminController::class, 'publishedRecipe']);
