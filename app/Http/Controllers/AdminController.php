@@ -233,7 +233,7 @@ class AdminController extends Controller
 
         foreach (json_decode($request->alat) as $tool) {
             Tool::create([
-                'nama_alat' => $tool->nama,
+                'nama_alat' => $tool->nama_alat,
                 'keterangan' => $tool->keterangan,
                 'resep_idresep' => $recipe->id
             ]);
