@@ -269,7 +269,7 @@ class AdminController extends Controller
 
     public function showRecipeById($id): JsonResponse
     {
-        $recipe = Recipe::where('idresep', $id)->first();
+        $recipe = Recipe::select('idresep', 'judul', 'status_resep', 'user_email', 'updated_at', 'gambar')->where('idresep', $id)->first();
 
         if (!$recipe) {
             return response()->json([
